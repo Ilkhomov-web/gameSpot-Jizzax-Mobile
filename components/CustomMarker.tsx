@@ -7,7 +7,7 @@ export default function CustomMarker({ premium }: { premium?: boolean }) {
       <View
         style={[
           styles.marker,
-          { backgroundColor: premium ? '#FFCC00' : '#ef4444' },
+          { backgroundColor: premium ? '#9B5DE0' : '#ef4444' },
         ]}
       >
         <Ionicons name="game-controller" size={16} color="#fff" />
