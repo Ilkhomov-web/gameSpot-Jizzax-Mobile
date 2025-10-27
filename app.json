@@ -30,6 +30,9 @@
         "projectId": "164a1306-5ca6-452e-843f-ebb1ee57ff94"
       }
     },
-    "owner": "ilkhomov-web"
+    "owner": "ilkhomov-web",
+    "android": {
+      "package": "com.ilkhomovweb.gamespotjizzakh"
+    }
   }
 }
