@@ -19,7 +19,6 @@ export const RoomsProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setLoading(true);
 
-      // 🔥 Firebase initialize qilish
       const { initializeFirebase, getFirebaseDb } = await import(
         '../config/firebase'
       );

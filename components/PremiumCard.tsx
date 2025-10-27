@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    padding: 2,
   },
   infoText: {
     fontSize: 14,

@@ -31,13 +31,6 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)/login" />
           <Stack.Screen name="(auth)/register" />
           <Stack.Screen name="(tabs)" />
-          {/* <Stack.Screen
-            name="PcDetails"
-            options={{
-              presentation: 'modal',
-              animationEnabled: true,
-            }}
-          /> */}
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="light" />

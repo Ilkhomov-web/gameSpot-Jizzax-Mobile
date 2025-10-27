@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,18 +20,50 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import CustomMarker from '../../components/CustomMarker';
 import AdBanner from '../../components/AdBanner';
+import { getFirebaseDb } from '@/config/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function HomeScreen() {
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showAd, setShowAd] = useState(true);
+
+  const [showAd, setShowAd] = useState(false);
+  const [adData, setAdData] = useState<{
+    type: 'image' | 'video';
+    source: string;
+  } | null>(null);
+
   const { user } = useAuth();
   const { rooms, loading } = useRooms();
   const mapRef = useRef<MapView>(null);
   const router = useRouter();
 
   const premiumRooms = rooms.filter((room) => room.premium);
+
+  useEffect(() => {
+    const fetchAd = async () => {
+      try {
+        const db = getFirebaseDb();
+        const snapshot = await getDocs(collection(db, 'ads'));
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
+          setAdData({
+            type: data.type || 'image',
+            source: data.adsSource,
+          });
+          setShowAd(true);
+        }
+      } catch (error) {
+        console.error('Ad fetch error:', error);
+      }
+    };
+
+    fetchAd();
+
+    const interval = setInterval(fetchAd, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleMarkerPress = (room) => {
     setSelectedRoom(room);
@@ -66,10 +98,11 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <AppHeader />
 
-      {showAd && (
+      {/* 🔥 Firestore’dan keltirilgan reklama */}
+      {showAd && adData && (
         <AdBanner
-          type="image"
-          source="https://via.placeholder.com/400x200?text=Gaming+Room+Ad"
+          type={adData.type}
+          source={adData.source}
           onClose={() => setShowAd(false)}
           duration={15}
         />
@@ -134,6 +167,7 @@ export default function HomeScreen() {
         )}
       </ScrollView>
 
+      {/* 🔽 Modal o‘zgarmadi */}
       <Modal
         visible={showModal}
         transparent={true}
@@ -224,7 +258,6 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   map: { flex: 1 },
-
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -253,17 +286,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     flex: 1,
   },
-  closeButton: {
-    padding: 8,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: '#999',
-  },
-  modalBody: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
+  closeButton: { padding: 8 },
+  closeButtonText: { fontSize: 24, color: '#999' },
+  modalBody: { paddingHorizontal: 20, paddingTop: 20 },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -272,16 +297,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#2a2a2a',
   },
-  detailLabel: {
-    fontSize: 14,
-    color: '#999',
-    fontWeight: '500',
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
+  detailLabel: { fontSize: 14, color: '#999', fontWeight: '500' },
+  detailValue: { fontSize: 16, color: '#fff', fontWeight: '600' },
   premiumBadge: {
     backgroundColor: 'rgba(255, 215, 0, 0.1)',
     borderRadius: 8,

@@ -36,8 +36,6 @@ export default function PcDetails() {
 
     try {
       setGettingLocation(true);
-
-      // Request location permission
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -47,23 +45,18 @@ export default function PcDetails() {
         setGettingLocation(false);
         return;
       }
-
-      // Get user's current location
       const userLocation = await Location.getCurrentPositionAsync({});
       const { latitude: userLat, longitude: userLng } = userLocation.coords;
 
-      // Room coordinates
       const roomLat = room.lat || 40.1158;
       const roomLng = room.lng || 67.8422;
 
-      // Open Google Maps with directions
       const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${roomLat},${roomLng}&travelmode=driving`;
 
       const canOpen = await Linking.canOpenURL(mapsUrl);
       if (canOpen) {
         await Linking.openURL(mapsUrl);
       } else {
-        // Fallback to Apple Maps format
         const appleMapsUrl = `maps://maps.apple.com/?saddr=${userLat},${userLng}&daddr=${roomLat},${roomLng}`;
         await Linking.openURL(appleMapsUrl);
       }
@@ -111,7 +104,6 @@ export default function PcDetails() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -125,8 +117,6 @@ export default function PcDetails() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <ImageSlider images={room.roomsImage || []} />
-
-        {/* Room Info */}
         <View style={styles.infoSection}>
           <Text style={styles.roomName}>{room.name}</Text>
 
@@ -156,16 +146,12 @@ export default function PcDetails() {
               <Ionicons name="chevron-forward" size={20} color="#666" />
             </TouchableOpacity>
           )}
-
-          {/* Price */}
           <View style={styles.priceSection}>
             <Text style={styles.priceLabel}>Narxi</Text>
             <Text style={styles.priceValue}>
               {room.price?.toLocaleString() || '-'} so'm/soat
             </Text>
           </View>
-
-          {/* Details Grid */}
           <View style={styles.detailsGrid}>
             <View style={styles.detailCard}>
               <Ionicons name="laptop" size={24} color="#4F46E5" />
@@ -193,8 +179,6 @@ export default function PcDetails() {
               <Text style={styles.detailCardValue}>24/7</Text>
             </View>
           </View>
-
-          {/* Description */}
           {room.description && (
             <View style={styles.descriptionSection}>
               <Text style={styles.descriptionTitle}>Tavsif</Text>

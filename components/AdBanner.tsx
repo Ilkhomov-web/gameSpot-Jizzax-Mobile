@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import {
   View,
   Image,
-  Video,
   TouchableOpacity,
   Text,
   StyleSheet,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Video } from 'expo-av'; // ✅ expo-av dan import
 
 interface AdBannerProps {
   type: 'image' | 'video';
@@ -35,12 +35,10 @@ export default function AdBanner({
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          onClose?.();
+          setTimeout(() => onClose?.(), 500); // 🔹 yarim soniya kechiktirib yopish
           return 0;
         }
-        if (prev === 3) {
-          setShowCloseButton(true);
-        }
+        if (prev === 3) setShowCloseButton(true);
         return prev - 1;
       });
     }, 1000);
@@ -58,7 +56,8 @@ export default function AdBanner({
           style={styles.media}
           useNativeControls={false}
           isLooping={false}
-          shouldPlay={true}
+          shouldPlay
+          resizeMode="cover"
         />
       )}
 
@@ -77,7 +76,7 @@ export default function AdBanner({
 
 const styles = StyleSheet.create({
   container: {
-    width: width,
+    width,
     height: 200,
     backgroundColor: '#000',
     position: 'relative',
